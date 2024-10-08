@@ -57,14 +57,13 @@ def apply_pseudolandmarks(img, labeled_mask):
 
 def save_plot(output_dir, filename, images_to_display, img):
     """Save all images and plots to a single output file."""
-    fig, axes = plt.subplots(3, 3, figsize=(20, 15))  # Увеличиваем количество строк для гистограммы
+    fig, axes = plt.subplots(3, 3, figsize=(20, 15))
     axes = axes.flatten()
 
     for i, (title, img) in enumerate(images_to_display):
         axes[i].imshow(img, cmap='gray' if len(img.shape) == 2 else None)
         axes[i].set_title(title)
 
-    # Добавление гистограммы
     channels = [
         (img[:, :, 0], 'blue'),
         ((img[:, :, 0] + img[:, :, 2]) / 2, 'blue-yellow'),
@@ -97,7 +96,7 @@ def save_plot(output_dir, filename, images_to_display, img):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     plt.savefig(os.path.join(output_dir, f"{filename}_all_transformations.jpg"))
-    plt.close()  # Close the figure after saving
+    plt.close()
 
 def apply_transformations(image_path, output_dir=None):
     """Apply a series of transformations to a given image."""
@@ -105,10 +104,8 @@ def apply_transformations(image_path, output_dir=None):
     filename = os.path.splitext(os.path.basename(image_path))[0]
     images_to_display = []
 
-    # Always display for single image
     images_to_display.append((f"{filename} - Original", img))
 
-    # Apply transformations
     gauss = apply_thresholding(img)
     images_to_display.append((f"{filename} - Thresholding", gauss))
 
@@ -126,7 +123,6 @@ def apply_transformations(image_path, output_dir=None):
     annotated_img = apply_pseudolandmarks(img, a_clean)
     images_to_display.append((f"{filename} - Pseudolandmarks", annotated_img))
 
-    # Save all images and plots as a single slide for each image processed in a directory
     if output_dir is not None:
         save_plot(output_dir, filename, images_to_display, img)  # Save all transformations and histogram to a single file
     else:
@@ -184,14 +180,14 @@ def plot_images(images_to_display, img, display):
 
 def main():
     parser = argparse.ArgumentParser(description='Image transformation using PlantCV.')
-    parser.add_argument('source', help='Source image or directory')  # Один обязательный аргумент без флага
+    parser.add_argument('source', help='Source image or directory') 
     parser.add_argument('-dst', '--destination', help='Destination directory for processed images')
     args = parser.parse_args()
 
     if os.path.isfile(args.source):
-        apply_transformations(args.source)  # No output directory for single images
+        apply_transformations(args.source) 
     elif os.path.isdir(args.source):
-        if args.destination:  # Make sure destination is provided for directory processing
+        if args.destination: 
             process_directory(args.source, args.destination)
         else:
             print("Please specify a destination directory for processing directories.")
