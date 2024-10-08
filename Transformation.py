@@ -124,9 +124,9 @@ def apply_transformations(image_path, output_dir=None):
     images_to_display.append((f"{filename} - Pseudolandmarks", annotated_img))
 
     if output_dir is not None:
-        save_plot(output_dir, filename, images_to_display, img)  # Save all transformations and histogram to a single file
+        save_plot(output_dir, filename, images_to_display, img)  
     else:
-        plot_images(images_to_display, img, True)  # For a single image, display it
+        plot_images(images_to_display, img, True) 
 
 def process_directory(src_dir, dst_dir):
     """Process all images in a directory."""
