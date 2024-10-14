@@ -6,7 +6,6 @@ from tensorflow.keras.models import Sequential
 import json
 import zipfile
 
-# Function to check if a dataset path exists and contains images in subdirectories
 def validate_dataset_path(path):
     if not os.path.exists(path):
         raise FileNotFoundError(f"The path {path} does not exist.")
@@ -20,7 +19,6 @@ def validate_dataset_path(path):
         if not images:
             raise ValueError(f"No images found in the subdirectory {subdir} of {path}.")
 
-# Function to load the dataset
 def load_dataset(path, batch_size=32, img_size=(256, 256)):
     return tf.keras.utils.image_dataset_from_directory(
         path,
@@ -39,7 +37,6 @@ def load_dataset(path, batch_size=32, img_size=(256, 256)):
         follow_links=False,
     )
 
-# Function to build the CNN model
 def build_model():
     model = Sequential()
     model.add(Conv2D(filters=32, kernel_size=3, padding='same', activation='relu', input_shape=[256, 256, 3]))
@@ -76,45 +73,33 @@ def build_model():
     
     return model
 
-# Function to save the model and history in a zip file
 def save_to_zip(model, history, zip_filename="training_results.zip"):
-    # Save model
     model.save("trained_model.keras")
     
-    # Save history to JSON
     with open("training_history.json", "w") as f:
         json.dump(history.history, f)
     
-    # Create a zip file and add the model and history files
     with zipfile.ZipFile(zip_filename, 'w') as zipf:
         zipf.write("trained_model.keras", arcname="trained_model.keras")
         zipf.write("training_history.json", arcname="training_history.json")
     
-    # Optionally remove the intermediate files
     os.remove("trained_model.keras")
     os.remove("training_history.json")
 
-# Main function to execute the training process
 def main(train_path, val_path):
-    # Validate dataset paths
     validate_dataset_path(train_path)
     validate_dataset_path(val_path)
 
-    # Load datasets
     training_set = load_dataset(train_path)
     validation_set = load_dataset(val_path)
     
-    # Build and compile the model
     model = build_model()
     model.summary()
 
-    # Train the model and save the training history
     history = model.fit(x=training_set, validation_data=validation_set, epochs=10)
 
-    # Save the model and history to a zip file
     save_to_zip(model, history)
 
-# Entry point
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python train.py <train_dataset_path> <validation_dataset_path>")
