@@ -20,7 +20,7 @@ def predict_disease(model, img_array, class_names):
     return predicted_label
 
 def plot_metrics(accuracies, losses):
-    """Отобразить точность и потери на графике."""
+    "Display accuracy and loss on a graph."
     epochs = list(range(1, len(accuracies) + 1))
     plt.plot(epochs, accuracies, label="Accuracy", marker='o', color='blue')
     plt.plot(epochs, losses, label="Loss", marker='o', color='red')
