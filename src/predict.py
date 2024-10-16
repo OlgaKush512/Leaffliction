@@ -19,6 +19,18 @@ def predict_disease(model, img_array, class_names):
     predicted_label = class_names[predicted_class[0]]
     return predicted_label
 
+def plot_metrics(accuracies, losses):
+    """Отобразить точность и потери на графике."""
+    epochs = list(range(1, len(accuracies) + 1))
+    plt.plot(epochs, accuracies, label="Accuracy", marker='o', color='blue')
+    plt.plot(epochs, losses, label="Loss", marker='o', color='red')
+    plt.title('Model Performance')
+    plt.xlabel('Epochs')
+    plt.ylabel('Value')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
 def main(img_path):
     """Main function to load the model, predict the class, and display the result."""
     if not os.path.exists(img_path):
@@ -38,7 +50,7 @@ def main(img_path):
             color_mode="rgb",
             batch_size=32,
             image_size=(256, 256),
-            shuffle=False,
+            shuffle=True,
             seed=None,
             validation_split=None,
             subset=None,
@@ -47,20 +59,35 @@ def main(img_path):
             crop_to_aspect_ratio=False
         )
 
-        test_set = test_set.take(200)
         class_names = test_set.class_names
 
-        loss, accuracy = model.evaluate(test_set, verbose=1)
-        print(f"Test Loss: {loss}")
-        print(f"Test Accuracy: {accuracy}")
+        test_images, test_labels = [], []
+        for img, label in test_set.as_numpy_iterator():
+            test_images.extend(img)
+            test_labels.extend(label)
+            if len(test_images) >= 200:
+                break
 
-        plt.plot([accuracy], label="Accuracy")
-        plt.plot([loss], label="Loss")
-        plt.title("Model Performance")
-        plt.xlabel("Epochs")
-        plt.ylabel("Value")
-        plt.legend()
-        plt.show()
+        test_images = np.array(test_images[:200])
+        test_labels = np.array(test_labels[:200])
+
+        loss, accuracy = model.evaluate(test_images, test_labels, verbose=1)
+        accuracy_percent = accuracy * 100
+        print(f"Overall Test Loss: {loss}")
+        print(f"Overall Test Accuracy: {accuracy_percent:.2f}%")
+
+        accuracies = []
+        losses = []
+
+        for i in range(len(test_images)):
+            step_loss, step_accuracy = model.evaluate(np.expand_dims(test_images[i], axis=0), 
+                                                      np.expand_dims(test_labels[i], axis=0), 
+                                                      verbose=0)
+            accuracies.append(step_accuracy)
+            losses.append(step_loss)
+            print(f"Step {i+1}: accuracy={step_accuracy}, loss={step_loss}")
+
+        plot_metrics(accuracies, losses)
 
     else:
         valid = tf.keras.utils.image_dataset_from_directory(
@@ -77,6 +104,7 @@ def main(img_path):
             subset=None,
             interpolation="bilinear",
             follow_links=False,
+            verbose=None
         )
         class_names = valid.class_names 
 
@@ -94,7 +122,7 @@ def main(img_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python predict.py <image_path>")
+        print("Usage: python predict.py <image_or_directory_path>")
     else:
         img_path = sys.argv[1]
         main(img_path)

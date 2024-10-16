@@ -1,8 +1,15 @@
 #!/bin/bash
 
-if [ -f "leaves.zip" ]; then
-    unzip leaves.zip
-    echo "leaves.zip has been successfully unzipped."
+if [ -z "$1" ]; then
+    echo "Please provide the path to the zip file."
+    exit 1
+fi
+
+zip_file="$1"
+
+if [ -f "$zip_file" ]; then
+    unzip "$zip_file"
+    echo "$zip_file has been successfully unzipped."
 
     find images -type d | while read dir; do
         lower_dir=$(echo "$dir" | tr '[:upper:]' '[:lower:]')
@@ -13,5 +20,5 @@ if [ -f "leaves.zip" ]; then
 
     echo "All subdirectories in the images folder have been renamed to lowercase."
 else
-    echo "leaves.zip file not found."
+    echo "$zip_file not found."
 fi

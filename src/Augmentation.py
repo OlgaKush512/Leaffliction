@@ -10,6 +10,14 @@ def calculate_hash(image_path):
         img_hash = hashlib.md5(f.read()).hexdigest()
     return img_hash
 
+def enhance_color(image):
+    """Enhance the color saturation of the image."""
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    hsv[..., 1] = hsv[..., 1] * 1.5 
+    hsv[..., 1] = np.clip(hsv[..., 1], 0, 255) 
+    enhanced_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR) 
+    return enhanced_image
+
 def augment_image(image_path, output_dir, num_augmentations=None):
     """Augment an image and save the specified number of augmented versions."""
     image = cv2.imread(image_path)
@@ -22,10 +30,10 @@ def augment_image(image_path, output_dir, num_augmentations=None):
     augmentations = {
         "Flip": cv2.flip(image, 1),
         "Rotate": cv2.warpAffine(image, cv2.getRotationMatrix2D((image.shape[1]//2, image.shape[0]//2), 45, 1.0), (image.shape[1], image.shape[0])),
-        "Skew": cv2.warpAffine(image, np.float32([[1, 0, 0], [0.2, 1, 0]]), (image.shape[1], image.shape[0])),
-        "Shear": cv2.warpAffine(image, np.float32([[1.2, 0, 0], [0, 1, 0]]), (int(image.shape[1] * 1.2), image.shape[0])),
+        "Enhanced_Color": enhance_color(image),
+        "Enhanced_Contrast": cv2.convertScaleAbs(image, alpha=1.5, beta=0),
         "Crop": image[int(image.shape[0]*0.1):int(image.shape[0]*0.9), int(image.shape[1]*0.1):int(image.shape[1]*0.9)],
-        "Distortion": cv2.GaussianBlur(image, (15, 15), 0)
+        "Blur": cv2.GaussianBlur(image, (15, 15), 0)
     }
 
     count = 0
