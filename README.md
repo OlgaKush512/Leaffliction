@@ -228,13 +228,13 @@ python3 predict.py image1.JPG
 For a **directory**:
 
 ```bash
-python3 predict.py images
+python3 predict.py validation_dataset
 ```
 
 ### Example of Expected Output for a Single Image:
 
 ```bash
-Predicted Disease: Apple Scab
+Predicted Disease: Apple_Scab
 ```
 
 Along with the image, displaying the predicted label.
