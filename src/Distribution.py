@@ -5,7 +5,7 @@ import numpy as np
 
 def collect_image_data(directory):
     data = {}
-    for root, dirs, files in os.walk(directory):
+    for root, _, files in os.walk(directory):
         if root == directory:
             continue
         print(f"Checking directory: {root}")
@@ -22,7 +22,7 @@ def collect_image_data(directory):
 
 def create_combined_chart(data, title):
     colors = plt.cm.viridis(np.linspace(0, 1, len(data)))
-    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+    _, axs = plt.subplots(1, 2, figsize=(14, 6))
 
     axs[0].pie(
         data.values(),
