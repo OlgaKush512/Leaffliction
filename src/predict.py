@@ -5,6 +5,7 @@ import os
 from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 
+
 def load_image(img_path, img_size):
     """Load and preprocess the image."""
     img = image.load_img(img_path, target_size=img_size)
@@ -12,12 +13,14 @@ def load_image(img_path, img_size):
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
+
 def predict_disease(model, img_array, class_names):
     """Predict the class of the disease for the input image."""
     predictions = model.predict(img_array, batch_size=1)
     predicted_class = np.argmax(predictions, axis=1)
     predicted_label = class_names[predicted_class[0]]
     return predicted_label
+
 
 def plot_metrics(accuracies, losses):
     "Display accuracy and loss on a graph."
@@ -31,8 +34,10 @@ def plot_metrics(accuracies, losses):
     plt.grid(True)
     plt.show()
 
+
 def main(img_path):
-    """Main function to load the model, predict the class, and display the result."""
+    """Main function to load the model, predict the class,
+    and display the result."""
     if not os.path.exists(img_path):
         print(f"Error: The file {img_path} does not exist.")
         return
@@ -80,9 +85,11 @@ def main(img_path):
         losses = []
 
         for i in range(len(test_images)):
-            step_loss, step_accuracy = model.evaluate(np.expand_dims(test_images[i], axis=0), 
-                                                      np.expand_dims(test_labels[i], axis=0), 
-                                                      verbose=0)
+            step_loss, step_accuracy = model.evaluate(
+                np.expand_dims(test_images[i], axis=0),
+                np.expand_dims(test_labels[i], axis=0),
+                verbose=0
+            )
             accuracies.append(step_accuracy)
             losses.append(step_loss)
             print(f"Step {i+1}: accuracy={step_accuracy}, loss={step_loss}")
@@ -94,7 +101,7 @@ def main(img_path):
             'validation_dataset',
             labels="inferred",
             label_mode="categorical",
-            class_names=None, 
+            class_names=None,
             color_mode="rgb",
             batch_size=32,
             image_size=(256, 256),
@@ -106,12 +113,12 @@ def main(img_path):
             follow_links=False,
             verbose=None
         )
-        class_names = valid.class_names 
+        class_names = valid.class_names
 
         img_array = load_image(img_path, img_size)
 
         predicted_label = predict_disease(model, img_array, class_names)
-        
+
         print(f"Predicted Disease: {predicted_label}")
 
         img = image.load_img(img_path)
@@ -119,6 +126,7 @@ def main(img_path):
         plt.title(f"Predicted: {predicted_label}")
         plt.axis('off')
         plt.show()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

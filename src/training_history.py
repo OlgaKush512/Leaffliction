@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 import sys
 
+
 def visualize_history(history_file):
     with open(history_file, "r") as f:
         history = json.load(f)
@@ -27,6 +28,7 @@ def visualize_history(history_file):
     ax2.legend(loc='upper right')
 
     plt.show()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
